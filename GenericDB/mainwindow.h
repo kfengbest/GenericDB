@@ -7,6 +7,8 @@ namespace Ui {
 class MainWindow;
 }
 
+class sqlite3;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -17,6 +19,13 @@ public:
     
 private:
     Ui::MainWindow *ui;
+
+    sqlite3* mpDatabase;
+    bool ConnectToDatabase(const QString& path);
+    void CloseDatabase();
+
+
 };
+
 
 #endif // MAINWINDOW_H
