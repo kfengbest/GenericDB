@@ -6,8 +6,8 @@
 
 QT       += core gui
 
-INCLUDEPATH += /Users/fengka/Src/GenericDB/3P/sqlite/3.6/src
-LIBS += /Users/fengka/Src/GenericDB/3P/sqlite/3.6/lib/mac/64/debug/libsqlite3.a
+INCLUDEPATH += ../3P/sqlite/3.6/src
+LIBS += ../3P/sqlite/3.6/lib/mac/64/debug/libsqlite3.a
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
