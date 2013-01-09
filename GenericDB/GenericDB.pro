@@ -16,8 +16,26 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    dbtable.cpp \
+    dbview.cpp \
+    connectionsqlite.cpp \
+    connectionmssql.cpp \
+    connectionbase.cpp \
+    connectionmysql.cpp \
+    connectionfactory.cpp \
+    dbrecordbuffer.cpp \
+    dbfield.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    dbtable.h \
+    dbview.h \
+    connectionsqlite.h \
+    connectionmssql.h \
+    connectionbase.h \
+    connectionmysql.h \
+    connectionfactory.h \
+    dbrecordbuffer.h \
+    dbfield.h
 
 FORMS    += mainwindow.ui
