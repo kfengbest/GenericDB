@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "sqlite3.h"
+#include "dbrecordbuffer.h"
+#include "dbfield.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -124,6 +127,72 @@ void SingleColumnDatabaseQueryExecutor::ClearResult()
     *((QString*)mpResult) = "";
 }
 
+
+ConfigurationDatabaseQueryExecutor::ConfigurationDatabaseQueryExecutor()
+{
+    mpResult = new QList<DbRecordBuffer*>();
+}
+
+ConfigurationDatabaseQueryExecutor::~ConfigurationDatabaseQueryExecutor()
+{
+    if (mpResult != NULL)
+    {
+        delete (QList<DbRecordBuffer*>*)mpResult;
+        mpResult = NULL;
+    }
+}
+
+void ConfigurationDatabaseQueryExecutor::BuildResult(sqlite3_stmt* pStmt)
+{
+    if (pStmt == NULL)
+        return;
+
+    int count = sqlite3_column_count(pStmt);
+    {
+        DbRecordBuffer* pRecord = new DbRecordBuffer();
+
+        QString str0 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 0));
+        pRecord->setKey(str0.toInt());
+
+        QString str1 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 1));
+        DbField* dbf1 = new DbField();
+        dbf1->name("Layer");
+        dbf1->value(str1);
+        pRecord->addField(dbf1);
+
+        QString str2 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 2));
+        DbField* dbf2 = new DbField();
+        dbf2->name("Type");
+        dbf2->value(str2);
+        pRecord->addField(dbf2);
+
+        QString str3 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 3));
+        DbField* dbf3 = new DbField();
+        dbf3->name("Name");
+        dbf3->value(str3);
+        pRecord->addField(dbf3);
+
+
+        QString str4 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 4));
+        DbField* dbf4 = new DbField();
+        dbf4->name("Value");
+        dbf4->value(str4);
+        pRecord->addField(dbf4);
+
+        QString str5 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 5));
+        DbField* dbf5 = new DbField();
+        dbf5->name("Parent");
+        dbf5->value(str5);
+        pRecord->addField(dbf5);
+
+        qDebug() << str0 << " " << str1 << " " << str2 << "  " << str3 << " " << str4 << " " << str5;
+
+        ((QList<DbRecordBuffer*>*)mpResult)->append(pRecord);
+    }
+}
+
+
+
 void MainWindow::on_pushButton_clicked()
 {
 
@@ -133,4 +202,25 @@ void MainWindow::on_pushButton_clicked()
 
     QString sqlDelete = QString("delete from Configurations where AIMKEY=20");
     ExecuteSql(sqlDelete);
+
+    QString sqlQuery = QString("select * from Configurations where parent=1");
+    ConfigurationDatabaseQueryExecutor querier;
+    ExecuteSql(sqlQuery,&querier);
+
+    QList<DbRecordBuffer*>* pRecords = NULL;
+    pRecords = (QList<DbRecordBuffer*>*)querier.GetResult();
+    if(pRecords != NULL)
+    {
+        int count = pRecords->size();
+        for(int i = 0; i < count; i++)
+        {
+            DbRecordBuffer* pRecordBuffer = pRecords->at(i);
+
+            DbField* pField = pRecordBuffer->getField(2);
+            QString cap = pField->value();
+            QTreeWidgetItem* pItem0 = new QTreeWidgetItem(QStringList() << cap);
+            ui->treeWidget->addTopLevelItem(pItem0);
+        }
+    }
+
 }

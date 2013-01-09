@@ -40,7 +40,7 @@ class DatabaseQueryExecutor
 public:
     virtual ~DatabaseQueryExecutor(){};
     virtual void BuildResult(sqlite3_stmt* pStmt) = 0;
-    void* GetResult();
+    void* GetResult() {return mpResult;}
 
 protected:
     void *mpResult;
@@ -55,9 +55,12 @@ public:
     void ClearResult();
 };
 
-inline void* DatabaseQueryExecutor::GetResult()
+class ConfigurationDatabaseQueryExecutor : public DatabaseQueryExecutor
 {
-    return mpResult;
-}
+public:
+    ConfigurationDatabaseQueryExecutor();
+    ~ConfigurationDatabaseQueryExecutor();
+    virtual void BuildResult(sqlite3_stmt* pStmt);
+};
 
 #endif // MAINWINDOW_H
