@@ -10,7 +10,7 @@ class MainWindow;
 struct sqlite3;
 struct sqlite3_stmt;
 class DatabaseQueryExecutor;
-
+class QTreeWidgetItem;
 
 class MainWindow : public QMainWindow
 {
@@ -31,6 +31,7 @@ private:
     void CloseDatabase();
     virtual bool ExecuteSql(const QString& sql, DatabaseQueryExecutor* executor = NULL);
 
+    void build(int key, QTreeWidgetItem *p);
 
 };
 

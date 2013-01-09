@@ -203,7 +203,21 @@ void MainWindow::on_pushButton_clicked()
     QString sqlDelete = QString("delete from Configurations where AIMKEY=20");
     ExecuteSql(sqlDelete);
 
-    QString sqlQuery = QString("select * from Configurations where parent=1");
+    QTreeWidgetItem* pItem0 = new QTreeWidgetItem(QStringList() << "root");
+    ui->treeWidget->addTopLevelItem(pItem0);
+
+    build(1,pItem0);
+
+
+}
+
+void MainWindow::build(int key, QTreeWidgetItem* p)
+{
+
+    QString sqlQuery = QString("select * from Configurations where parent=%1").arg(key);
+
+    qDebug() << sqlQuery;
+
     ConfigurationDatabaseQueryExecutor querier;
     ExecuteSql(sqlQuery,&querier);
 
@@ -219,8 +233,11 @@ void MainWindow::on_pushButton_clicked()
             DbField* pField = pRecordBuffer->getField(2);
             QString cap = pField->value();
             QTreeWidgetItem* pItem0 = new QTreeWidgetItem(QStringList() << cap);
-            ui->treeWidget->addTopLevelItem(pItem0);
+            p->addChild(pItem0);
+
+            build(pRecordBuffer->getKey(), pItem0);
         }
     }
+
 
 }
