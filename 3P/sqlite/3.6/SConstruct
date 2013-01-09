@@ -1,0 +1,120 @@
+#
+#  Copyright (c) 2008 by Autodesk, Inc.
+#
+#  By using this code, you are agreeing to the terms and conditions of
+#  the License Agreement included in the documentation for this code.
+#
+#  AUTODESK MAKES NO WARRANTIES, EXPRESS OR IMPLIED, AS TO THE CORRECTNESS
+#  OF THIS CODE OR ANY DERIVATIVE WORKS WHICH INCORPORATE IT. AUTODESK
+#  PROVIDES THE CODE ON AN "AS-IS" BASIS AND EXPLICITLY DISCLAIMS ANY
+#  LIABILITY, INCLUDING CONSEQUENTIAL AND INCIDENTAL DAMAGES FOR ERRORS,
+#  OMISSIONS, AND OTHER PROBLEMS IN THE CODE.
+#
+#  Use, duplication, or disclosure by the U.S. Government is subject to
+#  restrictions set forth in FAR 52.227-19 (Commercial Computer Software
+#  Restricted Rights) and DFAR 252.227-7013(c)(1)(ii) (Rights in Technical
+#  Data and Computer Software), as applicable.
+#
+
+import os
+import glob
+import sys
+import fnmatch
+import commands
+
+class DirectoryWalker:
+    # a forward iterator that traverses a directory tree
+
+    def __init__(self, directory):
+        self.stack = [directory]
+        self.files = []
+        self.index = 0
+
+    def __getitem__(self, index):
+        while 1:
+            try:
+                file = self.files[self.index]
+                self.index = self.index + 1
+            except IndexError:
+                # pop next directory from stack
+                self.directory = self.stack.pop()
+                self.files = os.listdir(self.directory)
+                self.index = 0
+            else:
+                # got a filename
+                fullname = os.path.join(self.directory, file)
+                if os.path.isdir(fullname) and not os.path.islink(fullname):
+                    self.stack.append(fullname)
+                if os.path.isfile(fullname):
+                    return fullname
+
+env = Environment()
+
+# Initalize $CCFLAGS
+
+
+# Initalize preprocessor definition $CPPDEFINES
+preprocessor = []
+
+# Define for config
+config = ARGUMENTS.get('config', 'debug')
+if config == 'debug':
+    preprocessor = ['_DEBUG', 'SQLITE_DEBUG']
+    ccflags = ['-g', '-fPIC']
+elif config == 'release':
+    preprocessor = []
+    ccflags = ['-DNDEBUG', '-fPIC', '-O2', '-pipe']
+
+# Define different compiler types according to platform type
+compilerType = ''
+OS = sys.platform
+if OS == 'win32':
+    compilerType = 'vc9.0'
+elif OS == 'linux2':
+    compilerType = 'gnu'
+elif OS == 'darwin':
+    compilerType = 'mac'
+
+if OS == 'win32':
+    preprocessor = [preprocessor, 'WIN32','_LIB']
+elif OS == 'linux2':
+    preprocessor = [preprocessor, '_USRDLL']
+elif OS == 'darwin':
+    preprocessor = [preprocessor, '_LIB']
+       
+# Define $CCFLAGS for 32/64 bit environment
+platform = ARGUMENTS.get('platform', '32')
+if platform == '64':
+    ccflags += ['-m64', '-march=nocona']
+elif platform == '32':
+    ccflags += ['-m32', '-march=i686']
+
+env.Append(CCFLAGS=ccflags, CPPDEFINES=preprocessor)
+
+# Make target
+libName = 'sqlite3'
+
+# Source files
+dirWak = DirectoryWalker('./src')
+sources = []
+for file in dirWak:
+    sources.append(str(file))
+src = []
+src.extend(fnmatch.filter(sources, '*.c'))
+
+# Define output directory for 32/64 bit environment
+#status, outputDir = commands.getstatusoutput('dirname $PWD')
+
+# Output directory
+outputDir = os.path.join('.', 'lib', compilerType, platform, config)
+
+if not os.path.isdir(outputDir):
+    postbuild = 'mkdir ' + outputDir
+    commands.getstatusoutput(postbuild)
+
+# Build library
+staticlib = env.Library(libName, src)
+
+install = env.Install(outputDir, staticlib)
+env.Alias('install',install)
+
