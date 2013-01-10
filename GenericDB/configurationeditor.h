@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QTreeWidget>
-#include <QListWidget>
+#include <QTableWidget>
 
 class QTreeWidgetItem;
 
@@ -24,10 +24,12 @@ public slots:
     void onAdd();
     void onDelete();
 
+    void itemChanged(QTableWidgetItem *item);
+
 private:
 
     QTreeWidget* m_tree;
-    QListWidget* m_list;
+    QTableWidget* m_list;
 
     QTreeWidgetItem* m_currentItem;
 };

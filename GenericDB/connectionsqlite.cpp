@@ -134,6 +134,14 @@ ConfigurationDatabaseQueryExecutor::~ConfigurationDatabaseQueryExecutor()
 {
     if (mpResult != NULL)
     {
+        QList<DbRecordBuffer*>* list = (QList<DbRecordBuffer*>*)mpResult;
+        int c = list->count();
+        for(int i = 0; i < c; i++)
+        {
+            DbRecordBuffer* b = list->at(i);
+            delete b;
+            b = NULL;
+        }
         delete (QList<DbRecordBuffer*>*)mpResult;
         mpResult = NULL;
     }

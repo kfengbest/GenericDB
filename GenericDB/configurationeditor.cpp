@@ -12,14 +12,22 @@ ConfigurationEditor::ConfigurationEditor(QWidget *parent) :
     QHBoxLayout* layout = new QHBoxLayout;
     this->setLayout(layout);
 
-    m_tree = new QTreeWidget();
+    m_tree = new QTreeWidget(this);
+    m_tree->setMaximumWidth(200);
     layout->addWidget(m_tree);
 
     QObject::connect(m_tree,SIGNAL(itemPressed(QTreeWidgetItem *, int)),this,SLOT(SlotItemClicked(
     QTreeWidgetItem *, int)));
 
-    m_list = new QListWidget();
+    m_list = new QTableWidget(this);
     layout->addWidget(m_list);
+    m_list->setColumnCount(6);
+    m_list->setRowCount(8);
+    QStringList headers;
+    headers << "AIMKEY" << "Layer" << "Type" << "Name" << "Value" << "Parent";
+    m_list->setHorizontalHeaderLabels(headers);
+    QObject::connect(m_list,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(itemChanged(QTableWidgetItem*)));
+
 
     this->setGeometry(100,100,400,400);
 
@@ -136,14 +144,22 @@ void ConfigurationEditor::DislayInList(int aimkey)
             {
                 DbField* pField = pRecordBuffer->getField(j);
                 QString strValue = pField->value();
+                qDebug() << strValue;
 
-                QListWidgetItem* item = new QListWidgetItem(m_list);
-                item->setText(strValue);
+                QTableWidgetItem* item = new QTableWidgetItem(strValue);
 
-                m_list->addItem(item);
+                m_list->setItem(i,j, item);
             }
 
         }
     }
 }
 
+void ConfigurationEditor::itemChanged(QTableWidgetItem *item)
+{
+    QString newValue = item->text();
+    qDebug() << newValue;
+
+    QString sql = QString("update Configurations set Name = \"%1\"").arg(newValue);
+    //ConnectionSqlite::get()->ExecuteSql(sql);
+}
