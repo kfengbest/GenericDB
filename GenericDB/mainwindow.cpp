@@ -4,6 +4,8 @@
 #include "dbrecordbuffer.h"
 #include "dbfield.h"
 #include <QDebug>
+#include <QtGui>
+#include <QtCore>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -15,6 +17,28 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->ConnectToDatabase(path);
 
+    QTreeWidget* treeWidget1 = new QTreeWidget();
+    ui->horizontalLayout->addWidget(treeWidget1);
+
+    QHBoxLayout *layout = new QHBoxLayout();
+    ui->horizontalLayout->addLayout(layout);
+    QListWidget* w2 = new QListWidget();
+    layout->addWidget(w2);
+
+    QVBoxLayout* mainframe1 = new QVBoxLayout();
+    layout->addLayout(mainframe1);
+
+    QTabWidget* tab1 = new QTabWidget();
+    mainframe1->addWidget(tab1);
+    QWidget* t11 = new QWidget();
+    QWidget* t12 = new QWidget();
+
+    tab1->addTab(t11, "Tab1");
+    tab1->addTab(t12, "Tab2");
+
+
+    QTabWidget* tab2 = new QTabWidget();
+    mainframe1->addWidget(tab2);
 
 }
 

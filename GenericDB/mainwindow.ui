@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>405</width>
-    <height>482</height>
+    <width>1021</width>
+    <height>745</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>40</y>
+      <x>10</x>
+      <y>0</y>
       <width>114</width>
       <height>32</height>
      </rect>
@@ -30,10 +30,10 @@
    <widget class="QTreeWidget" name="treeWidget">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>80</y>
-      <width>221</width>
-      <height>351</height>
+      <x>10</x>
+      <y>40</y>
+      <width>131</width>
+      <height>411</height>
      </rect>
     </property>
     <column>
@@ -42,13 +42,24 @@
      </property>
     </column>
    </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>30</y>
+      <width>851</width>
+      <height>651</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout"/>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>405</width>
+     <width>1021</width>
      <height>22</height>
     </rect>
    </property>
