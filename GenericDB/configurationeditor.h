@@ -15,14 +15,21 @@ public:
     
     void build(int key, QTreeWidgetItem* p);
 
+    void DislayInList(int aimkey);
+
 signals:
     
 public slots:
-    
+    void SlotItemClicked(QTreeWidgetItem *item, int column);
+    void onAdd();
+    void onDelete();
+
 private:
 
     QTreeWidget* m_tree;
     QListWidget* m_list;
+
+    QTreeWidgetItem* m_currentItem;
 };
 
 #endif // CONFIGURATIONEDITOR_H
