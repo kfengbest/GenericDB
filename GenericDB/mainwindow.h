@@ -32,8 +32,6 @@ private:
     Ui::MainWindow *ui;
     NuSpliterView* m_pRootView;
 
-    void build(int key, QTreeWidgetItem *p);
-
 
 };
 

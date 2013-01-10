@@ -8,7 +8,7 @@
 #include "dbfield.h"
 #include "connectionsqlite.h"
 #include "nuspliterview.h"
-
+#include "configurationeditor.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -45,7 +45,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
+    QString sqlQuery = QString("select * from Configurations where AIMKEY=101");
+    ConnectionSqlite::get()->ExecuteSql(sqlQuery,&m_querier);
 
+    QList<DbRecordBuffer*>* pRecords = NULL;
+    pRecords = (QList<DbRecordBuffer*>*)m_querier.GetResult();
+    if(pRecords != NULL)
+    {
+            DbRecordBuffer* pRecordBuffer = pRecords->at(0);
+            m_pRootView = new NuSpliterView(ui->horizontalLayout, pRecordBuffer);
+            m_pRootView->onLoadView();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -69,53 +79,12 @@ void MainWindow::on_pushButton_clicked()
 //    QString sqlDelete = QString("delete from Configurations where AIMKEY=20");
 //    ExecuteSql(sqlDelete);
 
-    QTreeWidgetItem* pItem0 = new QTreeWidgetItem(QStringList() << "root");
-    ui->treeWidget->addTopLevelItem(pItem0);
 
-    build(1,pItem0);
-
+    ConfigurationEditor* pEditor = new ConfigurationEditor();
+    pEditor->show();
 
 
-    QString sqlQuery = QString("select * from Configurations where AIMKEY=101");
-    ConnectionSqlite::get()->ExecuteSql(sqlQuery,&m_querier);
 
-    QList<DbRecordBuffer*>* pRecords = NULL;
-    pRecords = (QList<DbRecordBuffer*>*)m_querier.GetResult();
-    if(pRecords != NULL)
-    {
-            DbRecordBuffer* pRecordBuffer = pRecords->at(0);
-            m_pRootView = new NuSpliterView(ui->horizontalLayout, pRecordBuffer);
-            m_pRootView->onLoadView();
-    }
 
-}
-
-void MainWindow::build(int key, QTreeWidgetItem* p)
-{
-
-    QString sqlQuery = QString("select * from Configurations where parent=%1").arg(key);
-
-//    qDebug() << sqlQuery;
-
-    ConfigurationDatabaseQueryExecutor querier;
-    ConnectionSqlite::get()->ExecuteSql(sqlQuery,&querier);
-
-    QList<DbRecordBuffer*>* pRecords = NULL;
-    pRecords = (QList<DbRecordBuffer*>*)querier.GetResult();
-    if(pRecords != NULL)
-    {
-        int count = pRecords->size();
-        for(int i = 0; i < count; i++)
-        {
-            DbRecordBuffer* pRecordBuffer = pRecords->at(i);
-
-            DbField* pField = pRecordBuffer->getField(3);
-            QString cap = pField->value();
-            QTreeWidgetItem* pItem0 = new QTreeWidgetItem(QStringList() << cap);
-            p->addChild(pItem0);
-
-            build(pRecordBuffer->getKey(), pItem0);
-        }
-    }
 }
 
