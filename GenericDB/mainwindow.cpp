@@ -18,16 +18,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     /*
-    QTreeWidget* treeWidget1 = new QTreeWidget();
-    ui->horizontalLayout->addWidget(treeWidget1);
+    QHBoxLayout *layout0 = new QHBoxLayout();
+    ui->horizontalLayout->addLayout(layout0);
 
-    QHBoxLayout *layout = new QHBoxLayout();
-    ui->horizontalLayout->addLayout(layout);
+    QTreeWidget* treeWidget1 = new QTreeWidget();
+    layout0->addWidget(treeWidget1);
+
+    QHBoxLayout *layout1 = new QHBoxLayout();
+    layout0->addLayout(layout1);
+
     QListWidget* w2 = new QListWidget();
-    layout->addWidget(w2);
+    layout1->addWidget(w2);
 
     QVBoxLayout* mainframe1 = new QVBoxLayout();
-    layout->addLayout(mainframe1);
+    layout1->addLayout(mainframe1);
 
     QTabWidget* tab1 = new QTabWidget();
     mainframe1->addWidget(tab1);
@@ -37,12 +41,12 @@ MainWindow::MainWindow(QWidget *parent) :
     tab1->addTab(t11, "Tab1");
     tab1->addTab(t12, "Tab2");
 
-
     QTabWidget* tab2 = new QTabWidget();
     mainframe1->addWidget(tab2);
 
+    QWidget* t21 = new QWidget();
+    tab2->addTab(t21, "Tab1");
     */
-
 
 
     QString sqlQuery = QString("select * from Configurations where AIMKEY=101");
@@ -56,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
             m_pRootView = new NuSpliterView(ui->horizontalLayout, pRecordBuffer);
             m_pRootView->onLoadView();
     }
+
 }
 
 MainWindow::~MainWindow()

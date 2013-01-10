@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     nutabview.cpp \
     nuspliterview.cpp \
     nuviewbase.cpp \
-    configurationeditor.cpp
+    configurationeditor.cpp \
+    nutreeitem.cpp
 
 HEADERS  += mainwindow.h \
     dbtable.h \
@@ -48,6 +49,7 @@ HEADERS  += mainwindow.h \
     nutabview.h \
     nuspliterview.h \
     nuviewbase.h \
-    configurationeditor.h
+    configurationeditor.h \
+    nutreeitem.h
 
 FORMS    += mainwindow.ui

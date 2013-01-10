@@ -18,11 +18,6 @@ NuSpliterView::NuSpliterView(NuViewBase* parentView, DbRecordBuffer* pData)
         else if(strValue == "V")
             m_pLayout = new QVBoxLayout;
     }
-
-    if(m_pParentView != NULL && m_pParentView->layout() != NULL)
-    {
-        m_pParentView->layout()->addLayout(m_pLayout);
-    }
 }
 
 NuSpliterView::NuSpliterView(QBoxLayout* layout, DbRecordBuffer* pData)
