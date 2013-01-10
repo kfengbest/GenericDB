@@ -7,15 +7,17 @@
 #include "dbrecordbuffer.h"
 #include "dbfield.h"
 #include "connectionsqlite.h"
+#include "nuspliterview.h"
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    NuViewBase(NULL,NULL),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    m_dbConnection = new ConnectionSqlite();
-
+    /*
     QTreeWidget* treeWidget1 = new QTreeWidget();
     ui->horizontalLayout->addWidget(treeWidget1);
 
@@ -39,13 +41,23 @@ MainWindow::MainWindow(QWidget *parent) :
     QTabWidget* tab2 = new QTabWidget();
     mainframe1->addWidget(tab2);
 
+    */
+
+
+
+
 }
 
 MainWindow::~MainWindow()
 {
-    delete m_dbConnection;
     delete ui;
 }
+
+QBoxLayout* MainWindow::layout() const
+{
+    return ui->horizontalLayout;
+}
+
 
 void MainWindow::on_pushButton_clicked()
 {
@@ -63,6 +75,19 @@ void MainWindow::on_pushButton_clicked()
     build(1,pItem0);
 
 
+
+    QString sqlQuery = QString("select * from Configurations where AIMKEY=101");
+    ConnectionSqlite::get()->ExecuteSql(sqlQuery,&m_querier);
+
+    QList<DbRecordBuffer*>* pRecords = NULL;
+    pRecords = (QList<DbRecordBuffer*>*)m_querier.GetResult();
+    if(pRecords != NULL)
+    {
+            DbRecordBuffer* pRecordBuffer = pRecords->at(0);
+            m_pRootView = new NuSpliterView(ui->horizontalLayout, pRecordBuffer);
+            m_pRootView->onLoadView();
+    }
+
 }
 
 void MainWindow::build(int key, QTreeWidgetItem* p)
@@ -73,7 +98,7 @@ void MainWindow::build(int key, QTreeWidgetItem* p)
 //    qDebug() << sqlQuery;
 
     ConfigurationDatabaseQueryExecutor querier;
-    m_dbConnection->ExecuteSql(sqlQuery,&querier);
+    ConnectionSqlite::get()->ExecuteSql(sqlQuery,&querier);
 
     QList<DbRecordBuffer*>* pRecords = NULL;
     pRecords = (QList<DbRecordBuffer*>*)querier.GetResult();
@@ -84,7 +109,7 @@ void MainWindow::build(int key, QTreeWidgetItem* p)
         {
             DbRecordBuffer* pRecordBuffer = pRecords->at(i);
 
-            DbField* pField = pRecordBuffer->getField(2);
+            DbField* pField = pRecordBuffer->getField(3);
             QString cap = pField->value();
             QTreeWidgetItem* pItem0 = new QTreeWidgetItem(QStringList() << cap);
             p->addChild(pItem0);

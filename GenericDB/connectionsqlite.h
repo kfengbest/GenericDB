@@ -14,6 +14,8 @@ public:
     ConnectionSqlite();
     ~ConnectionSqlite();
 
+    static ConnectionSqlite* get();
+
     virtual bool ExecuteSql(const QString& sql, DatabaseQueryExecutor* executor = NULL);
 
 private:

@@ -1,21 +1,26 @@
 #ifndef NUVIEWBASE_H
 #define NUVIEWBASE_H
 
-class RecordBuffer;
+#include "connectionsqlite.h"
+#include "dbrecordbuffer.h"
+#include <QBoxLayout>
 
 class NuViewBase
 {
 public:
-    NuViewBase(NuViewBase* parentView, RecordBuffer* pData);
+    NuViewBase(NuViewBase* parentView, DbRecordBuffer* pData);
 
-    void loadView() { onLoadView();}
+    virtual void onLoadView() {}
+    virtual QWidget* view() const {return NULL;}
+    virtual QBoxLayout* layout() const {return NULL;}
 
 protected:
-    virtual void onLoadView() {}
 
-private:
+public: // TODO: temp
     NuViewBase* m_pParentView;
-    RecordBuffer* m_pRecord;
+    DbRecordBuffer* m_pRecord;
+    ConfigurationDatabaseQueryExecutor m_querier;
+
 };
 
 #endif // NUVIEWBASE_H

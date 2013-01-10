@@ -32,8 +32,8 @@
      <rect>
       <x>10</x>
       <y>40</y>
-      <width>131</width>
-      <height>411</height>
+      <width>221</width>
+      <height>471</height>
      </rect>
     </property>
     <column>
@@ -45,9 +45,9 @@
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>240</x>
       <y>30</y>
-      <width>851</width>
+      <width>761</width>
       <height>651</height>
      </rect>
     </property>

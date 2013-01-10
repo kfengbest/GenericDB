@@ -2,7 +2,8 @@
 #define RECORDBUFFER_H
 #include <QList>
 
-class DbField;
+#include "dbfield.h"
+
 
 class DbRecordBuffer
 {

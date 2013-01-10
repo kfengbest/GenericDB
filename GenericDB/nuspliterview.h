@@ -1,10 +1,24 @@
 #ifndef NUSPLITERVIEW_H
 #define NUSPLITERVIEW_H
 
-class NuSpliterView
+#include "nuviewbase.h"
+#include <qboxlayout.h>
+
+
+class NuSpliterView : public NuViewBase
 {
 public:
-    NuSpliterView();
+    NuSpliterView(NuViewBase* parentView, DbRecordBuffer* pData);
+    NuSpliterView(QBoxLayout* pLayout, DbRecordBuffer* pData);
+
+    virtual QBoxLayout* layout() const {return m_pLayout;}
+    virtual void onLoadView();
+
+protected:
+
+private:
+    QBoxLayout* m_pLayout;
+
 };
 
 #endif // NUSPLITERVIEW_H

@@ -15,6 +15,12 @@ ConnectionSqlite::~ConnectionSqlite()
     CloseDatabase();
 }
 
+ ConnectionSqlite* ConnectionSqlite::get()
+ {
+    static ConnectionSqlite theOnlyOne;
+    return &theOnlyOne;
+ }
+
 
 bool ConnectionSqlite::ConnectToDatabase(const QString& path)
 {
@@ -144,6 +150,11 @@ void ConfigurationDatabaseQueryExecutor::BuildResult(sqlite3_stmt* pStmt)
 
         QString str0 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 0));
         pRecord->setKey(str0.toInt());
+
+        DbField* dbf0 = new DbField();
+        dbf0->name("AIMKEY");
+        dbf0->value(str0);
+        pRecord->addField(dbf0);
 
         QString str1 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 1));
         DbField* dbf1 = new DbField();
