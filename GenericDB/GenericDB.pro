@@ -25,7 +25,12 @@ SOURCES += main.cpp\
     connectionmysql.cpp \
     connectionfactory.cpp \
     dbrecordbuffer.cpp \
-    dbfield.cpp
+    dbfield.cpp \
+    nutreeview.cpp \
+    nulistview.cpp \
+    nutabview.cpp \
+    nuspliterview.cpp \
+    nuviewbase.cpp
 
 HEADERS  += mainwindow.h \
     dbtable.h \
@@ -36,6 +41,11 @@ HEADERS  += mainwindow.h \
     connectionmysql.h \
     connectionfactory.h \
     dbrecordbuffer.h \
-    dbfield.h
+    dbfield.h \
+    nutreeview.h \
+    nulistview.h \
+    nutabview.h \
+    nuspliterview.h \
+    nuviewbase.h
 
 FORMS    += mainwindow.ui

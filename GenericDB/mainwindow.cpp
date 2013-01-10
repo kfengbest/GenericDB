@@ -262,6 +262,5 @@ void MainWindow::build(int key, QTreeWidgetItem* p)
             build(pRecordBuffer->getKey(), pItem0);
         }
     }
-
-
 }
+
