@@ -3,7 +3,7 @@
 #include <QTreeWidget>
 #include <nutreeitem.h>
 
-NuTreeView::NuTreeView(NuViewBase* parentView, DbRecordBuffer* pData)
+NuTreeView::NuTreeView(NuViewBase* parentView, DmFolder* pData)
     : NuViewBase(parentView, pData)
 {
     m_tree = new QTreeWidget;

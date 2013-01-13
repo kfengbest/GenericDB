@@ -1,6 +1,7 @@
 #include "nutabview.h"
+#include "nulistview.h"
 
-NuTabView::NuTabView(NuViewBase* parentView, DbRecordBuffer* pData)
+NuTabView::NuTabView(NuViewBase* parentView, DmFolder* pData)
     : NuViewBase(parentView, pData)
 {
     m_widge = new QTabWidget;
@@ -9,12 +10,8 @@ NuTabView::NuTabView(NuViewBase* parentView, DbRecordBuffer* pData)
 
 void NuTabView::onLoadView()
 {
-    QWidget* tab1 = new QWidget;
-    m_widge->addTab(tab1, "tab1");
-
-    QWidget* tab2 = new QWidget;
-    m_widge->addTab(tab2, "tab2");
-
-    QWidget* tab3 = new QWidget;
-    m_widge->addTab(tab3, "tab3");
+    DmFolder* pFolder = new DmFolder("Folder_XRef_Parent_Doc", "View_XRef_Parent_Project");
+    NuListView* list = new NuListView(this, pFolder);
+    list->onLoadView();
+    m_widge->addTab(list->view(), "tab1");
 }

@@ -8,7 +8,7 @@
 class NuListView : public NuViewBase
 {
 public:
-    NuListView(NuViewBase* parentView, DbRecordBuffer* pData);
+    NuListView(NuViewBase* parentView, DmFolder* pData);
 
     virtual QWidget* view() const {return m_widget;}
     virtual void onLoadView();

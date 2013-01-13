@@ -1,8 +1,8 @@
 #include "nuviewbase.h"
 #include "dbrecordbuffer.h"
 
-NuViewBase::NuViewBase(NuViewBase* parentView, DbRecordBuffer* pData)
+NuViewBase::NuViewBase(NuViewBase* parentView, DmFolder* pData)
     : m_pParentView(parentView),
-      m_pRecord(pData)
+      m_dmFolder(pData)
 {
 }

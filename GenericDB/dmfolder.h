@@ -2,26 +2,26 @@
 #define DMFOLDER_H
 
 #include <QString>
-#include <map>
+#include <vector>
 
 
 class DbRecordBuffer;
 class DbView;
-
-typedef std::map<int,DbRecordBuffer*> RecordsMap;
 
 class DmFolder
 {
 public:
     DmFolder(const QString& folderName, const QString& dbViewName);
 
-    DbRecordBuffer* getRecordByKey(int aimKey);
-    DbRecordBuffer* getRecordAt(int index);
+    DbRecordBuffer* getColumnType() {return m_pColumnType;}
 
     int recordsCount() const;
-    const RecordsMap& records() {return m_recordsMap;}
+    DbRecordBuffer* getRecordAt(int index);
 
-    static DmFolder* getFolderBy(const QString& folderName, const QString& viewName);
+    QString dbViewName() const {return m_dbViewName;}
+    DbView* dbView() const {return m_dbView;}
+
+
 private:
     void init();
 
@@ -33,10 +33,8 @@ private:
     DbRecordBuffer* m_pColumnType;
     DbView* m_dbView;
 
-    RecordsMap m_recordsMap;
+    std::vector<DbRecordBuffer*> m_records;
 
-    typedef std::map<QString, DmFolder*> FolderMap;
-    static FolderMap m_sFolders;
 };
 
 #endif // DMFOLDER_H

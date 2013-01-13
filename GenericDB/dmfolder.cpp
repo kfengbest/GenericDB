@@ -10,6 +10,7 @@ DmFolder::DmFolder(const QString &folderName, const QString &dbViewName)
       m_pColumnType(NULL),
       m_dbView(NULL)
 {
+    init();
 }
 
 void DmFolder::init()
@@ -25,49 +26,20 @@ void DmFolder::init()
         m_dbView = new DbView();
 
     QString sql = QString("select * from %1").arg(m_dbViewName);
-    std::vector<DbRecordBuffer*> records;
-    ConnectionSqlite::get()->ExecuteSql(sql, records);
-    for(int i = 0; i < records.size(); i ++)
-    {
-        DbRecordBuffer* pRow = records.at(i);
-        m_recordsMap[pRow->getKey()] = pRow;
-    }
+    ConnectionSqlite::get()->ExecuteSql(sql, m_records);
 
-}
-
-DbRecordBuffer* DmFolder::getRecordByKey(int aimKey)
-{
-//    RecordsMap::iterator it = std::find(m_recordsMap.begin(), m_recordsMap::end(), aimKey);
-//    if(it == m_recordsMap.end())
-//    {
-
-//    }
 }
 
 DbRecordBuffer* DmFolder::getRecordAt(int index)
 {
-    return m_recordsMap[index];
+    DbRecordBuffer* pRec = m_records.at(index);
+    return pRec;
 }
 
 
 int DmFolder::recordsCount() const
 {
-    return m_recordsMap.size();
+    return m_records.size();
 }
 
-DmFolder* DmFolder::getFolderBy(const QString& folderName, const QString& viewName)
-{
-    DmFolder* ret = NULL;
-    FolderMap::iterator it = m_sFolders.find(folderName);
-    if(it == m_sFolders.end())
-    {
-        ret = new DmFolder(folderName, viewName);
-    }
-    else
-    {
-        ret = it->second;
-    }
 
-    return ret;
-
-}

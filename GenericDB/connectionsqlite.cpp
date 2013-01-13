@@ -64,7 +64,7 @@ bool ConnectionSqlite::ExecuteSql(const QString& sql)
     sqlite3_stmt* pStmt = NULL;
     const char* pTail = NULL;
     int rc = sqlite3_prepare(mpDatabase, sSql, len, &pStmt, &pTail);
-    Q_ASSERT(rc == SQLITE_OK);
+//    Q_ASSERT(rc == SQLITE_OK);
     if (rc == SQLITE_OK)
     {
         rc = sqlite3_step(pStmt);
@@ -104,7 +104,7 @@ bool ConnectionSqlite::ExecuteSql(const QString& sql, std::vector<DbRecordBuffer
     sqlite3_stmt* pStmt = NULL;
     const char* pTail = NULL;
     int rc = sqlite3_prepare(mpDatabase, sSql, len, &pStmt, &pTail);
-    Q_ASSERT(rc == SQLITE_OK);
+//    Q_ASSERT(rc == SQLITE_OK);
     if (rc == SQLITE_OK)
     {
 
@@ -153,7 +153,7 @@ bool ConnectionSqlite::buildRecordBufferTypes(const QString& sql, DbRecordBuffer
     sqlite3_stmt* pStmt = NULL;
     const char* pTail = NULL;
     int rc = sqlite3_prepare(mpDatabase, sSql, len, &pStmt, &pTail);
-    Q_ASSERT(rc == SQLITE_OK);
+    //Q_ASSERT(rc == SQLITE_OK);
     if (rc == SQLITE_OK)
     {
         rc = sqlite3_step(pStmt);

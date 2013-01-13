@@ -7,7 +7,8 @@
 
 
 NuSpliterView::NuSpliterView(NuViewBase* parentView, DbRecordBuffer* pData)
-    : NuViewBase(parentView, pData)
+    : NuViewBase(parentView, NULL),
+      m_pRecord(pData)
 {
     if(pData != NULL)
     {
@@ -21,7 +22,8 @@ NuSpliterView::NuSpliterView(NuViewBase* parentView, DbRecordBuffer* pData)
 }
 
 NuSpliterView::NuSpliterView(QBoxLayout* layout, DbRecordBuffer* pData)
-    : NuViewBase(NULL, pData)
+    : NuViewBase(NULL, NULL),
+      m_pRecord(pData)
 {
     m_pLayout = layout;
 }
@@ -52,7 +54,8 @@ void NuSpliterView::onLoadView()
 
                 if(strValue == "Tree")
                 {
-                    NuViewBase* tree = new NuTreeView(this, pRecordBuffer);
+                    DmFolder* pFolder1 = new DmFolder("Folder_Structure", "View_AllStructure");
+                    NuViewBase* tree = new NuTreeView(this, pFolder1);
                     m_pLayout->addWidget(tree->view());
                     tree->onLoadView();
                 }
@@ -74,13 +77,15 @@ void NuSpliterView::onLoadView()
                 }
                 else if(strValue == "List")
                 {
-                    NuListView* list = new NuListView(this, pRecordBuffer);
+                    DmFolder* pFolder1 = new DmFolder("Folder_AllProject", "View_AllProject");
+                    NuListView* list = new NuListView(this, pFolder1);
                     m_pLayout->addWidget(list->view());
                     list->onLoadView();
                 }
                 else if(strValue == "Tab")
                 {
-                    NuTabView* tab = new NuTabView(this, pRecordBuffer);
+                    DmFolder* pFolder1 = new DmFolder("Folder_MainFrame_Project", "View_AllProject");
+                    NuTabView* tab = new NuTabView(this, pFolder1);
                     m_pLayout->addWidget(tab->view());
                     tab->onLoadView();
                 }

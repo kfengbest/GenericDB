@@ -2,21 +2,18 @@
 
 #include <connectionsqlite.h>
 
-NuListView::NuListView(NuViewBase* parentView, DbRecordBuffer* pData)
+NuListView::NuListView(NuViewBase* parentView, DmFolder* pData)
     : NuViewBase(parentView, pData)
 {
     m_widget = new QTableWidget;
     m_widget->verticalHeader()->setVisible(false);
 
-    QString sql = QString("select * from View_AllProject where 1=0");
-    DbRecordBuffer colunmType;
-    ConnectionSqlite::get()->buildRecordBufferTypes(sql, &colunmType);
-
-    m_widget->setColumnCount(colunmType.count());
+    DbRecordBuffer* pColumnType = this->dmFolder()->getColumnType();
+    m_widget->setColumnCount(pColumnType->count());
     QStringList headers;
-    for(int i = 0; i < colunmType.count(); i++)
+    for(int i = 0; i < pColumnType->count(); i++)
     {
-        headers << colunmType.getField(i)->name();
+        headers << pColumnType->getField(i)->name();
     }
     m_widget->setHorizontalHeaderLabels(headers);
 
@@ -24,15 +21,12 @@ NuListView::NuListView(NuViewBase* parentView, DbRecordBuffer* pData)
 
 void NuListView::onLoadView()
 {
-    QString sql = QString("select * from View_AllProject");
-    std::vector<DbRecordBuffer*> records;
-    ConnectionSqlite::get()->ExecuteSql(sql, records);
-
-    int n = records.size();
+    int n = this->dmFolder()->recordsCount();
     m_widget->setRowCount(n);
     for(int r = 0; r < n; r++)
     {
-        DbRecordBuffer* pRow = records.at(r);
+
+        DbRecordBuffer* pRow = this->dmFolder()->getRecordAt(r);
         for(int c = 0; c < pRow->count(); c++)
         {
            QString strValue = pRow->getField(c)->value();

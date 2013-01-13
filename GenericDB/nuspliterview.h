@@ -4,7 +4,7 @@
 #include "nuviewbase.h"
 #include <qboxlayout.h>
 
-
+class DbRecordBuffer;
 class NuSpliterView : public NuViewBase
 {
 public:
@@ -18,7 +18,7 @@ protected:
 
 private:
     QBoxLayout* m_pLayout;
-
+    DbRecordBuffer* m_pRecord;
 };
 
 #endif // NUSPLITERVIEW_H
