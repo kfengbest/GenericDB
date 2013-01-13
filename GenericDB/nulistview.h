@@ -3,18 +3,18 @@
 
 #include "nuviewbase.h"
 
-#include <QListWidget>
+#include <QTableWidget>
 
 class NuListView : public NuViewBase
 {
 public:
     NuListView(NuViewBase* parentView, DbRecordBuffer* pData);
 
-    virtual QWidget* view() const {return m_widge;}
+    virtual QWidget* view() const {return m_widget;}
     virtual void onLoadView();
 
 private:
-    QListWidget* m_widge;
+    QTableWidget* m_widget;
 };
 
 #endif // NULISTVIEW_H

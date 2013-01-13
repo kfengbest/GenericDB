@@ -42,7 +42,8 @@ void ConnectionSqlite::CloseDatabase()
     }
 }
 
-bool ConnectionSqlite::ExecuteSql(const QString& sql, DatabaseQueryExecutor* executor)
+// insert, delete, update.
+bool ConnectionSqlite::ExecuteSql(const QString& sql)
 {
     if (mpDatabase == NULL || sql.isEmpty())
         return false;
@@ -70,16 +71,54 @@ bool ConnectionSqlite::ExecuteSql(const QString& sql, DatabaseQueryExecutor* exe
         Q_ASSERT(rc == SQLITE_DONE || rc == SQLITE_ROW);
         if (rc == SQLITE_DONE)
             bRet = true;
+        else
+            bRet = false;
+    }
+    else
+        bRet = false;
+
+    sqlite3_finalize(pStmt);
+    delete []sSql;
+
+    return bRet;
+}
+
+bool ConnectionSqlite::ExecuteSql(const QString& sql, std::vector<DbRecordBuffer*>& results)
+{
+    if (mpDatabase == NULL || sql.isEmpty())
+        return false;
+
+    QByteArray sqlByteArray = sql.toUtf8();
+
+    int len = sqlByteArray.length();
+    char* sSql = new char[len + 1];
+    sSql[len] = 0;
+
+#ifdef AD_OS_WIN
+    strcpy_s(sSql, len+1, sqlByteArray.constData());
+#else
+    strcpy(sSql, sqlByteArray.constData());
+#endif
+
+    bool bRet = true;
+    sqlite3_stmt* pStmt = NULL;
+    const char* pTail = NULL;
+    int rc = sqlite3_prepare(mpDatabase, sSql, len, &pStmt, &pTail);
+    Q_ASSERT(rc == SQLITE_OK);
+    if (rc == SQLITE_OK)
+    {
+
+        rc = sqlite3_step(pStmt);
+        Q_ASSERT(rc == SQLITE_DONE || rc == SQLITE_ROW);
+        if (rc == SQLITE_DONE)
+            bRet = true;
 
         while (rc == SQLITE_ROW)
         {
-            if (executor == NULL)
-            {
-                bRet = false;
-                break;
-            }
+            DbRecordBuffer* pRecordBuffer = new DbRecordBuffer;
+            results.push_back(pRecordBuffer);
+            buildRowRecord(pStmt, pRecordBuffer);
 
-            executor->BuildResult(pStmt);
             rc = sqlite3_step(pStmt);
         }
     }
@@ -92,112 +131,68 @@ bool ConnectionSqlite::ExecuteSql(const QString& sql, DatabaseQueryExecutor* exe
     return bRet;
 }
 
-
-SingleColumnDatabaseQueryExecutor::SingleColumnDatabaseQueryExecutor()
+// select * from xxx where 1=0;
+bool ConnectionSqlite::buildRecordBufferTypes(const QString& sql, DbRecordBuffer* pRecordBuffer)
 {
-    mpResult = new QString();
-}
+    if (mpDatabase == NULL || sql.isEmpty())
+        return false;
 
-SingleColumnDatabaseQueryExecutor::~SingleColumnDatabaseQueryExecutor()
-{
-    if (mpResult != NULL)
+    QByteArray sqlByteArray = sql.toUtf8();
+
+    int len = sqlByteArray.length();
+    char* sSql = new char[len + 1];
+    sSql[len] = 0;
+
+#ifdef AD_OS_WIN
+    strcpy_s(sSql, len+1, sqlByteArray.constData());
+#else
+    strcpy(sSql, sqlByteArray.constData());
+#endif
+
+    bool bRet = true;
+    sqlite3_stmt* pStmt = NULL;
+    const char* pTail = NULL;
+    int rc = sqlite3_prepare(mpDatabase, sSql, len, &pStmt, &pTail);
+    Q_ASSERT(rc == SQLITE_OK);
+    if (rc == SQLITE_OK)
     {
-        delete (QString*) mpResult;
-        mpResult = NULL;
+        rc = sqlite3_step(pStmt);
+        Q_ASSERT(rc == SQLITE_DONE || rc == SQLITE_ROW);
+        bRet = true;
+
+        buildRowRecord(pStmt, pRecordBuffer);
+
+        bRet = true;
     }
+    else
+        bRet = false;
+
+    sqlite3_finalize(pStmt);
+    delete []sSql;
+
+    return bRet;
 }
 
-void SingleColumnDatabaseQueryExecutor::BuildResult(sqlite3_stmt* pStmt)
+void ConnectionSqlite::buildRowRecord(sqlite3_stmt* pStmt, DbRecordBuffer* pRecordBuffer)
 {
-    if (pStmt == NULL)
-        return;
-
     int count = sqlite3_column_count(pStmt);
-    Q_ASSERT(count == 1);
-    if (count == 1)
-        *((QString*)mpResult) = ((QString*)mpResult)->append(QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 0)));
-
-}
-
-void SingleColumnDatabaseQueryExecutor::ClearResult()
-{
-    *((QString*)mpResult) = "";
-}
-
-
-ConfigurationDatabaseQueryExecutor::ConfigurationDatabaseQueryExecutor()
-{
-    mpResult = new QList<DbRecordBuffer*>();
-}
-
-ConfigurationDatabaseQueryExecutor::~ConfigurationDatabaseQueryExecutor()
-{
-    if (mpResult != NULL)
+    for(int i = 0; i < count; i++)
     {
-        QList<DbRecordBuffer*>* list = (QList<DbRecordBuffer*>*)mpResult;
-        int c = list->count();
-        for(int i = 0; i < c; i++)
-        {
-            DbRecordBuffer* b = list->at(i);
-            delete b;
-            b = NULL;
-        }
-        delete (QList<DbRecordBuffer*>*)mpResult;
-        mpResult = NULL;
+        QString colName = QString::fromUtf8(sqlite3_column_name(pStmt, i));
+        QString colType = QString::fromUtf8(sqlite3_column_decltype(pStmt, i));
+        QString colValue = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, i));
+
+        //qDebug() << "Column Num:" << count << " Name: " << colName << " Type " << colType << " value: " << colValue;
+
+        DbField* dbf = new DbField();
+        dbf->name(colName);
+        dbf->type(colType);
+        dbf->value(colValue);
+        pRecordBuffer->addField(dbf);
+
+        // TODO: this is hard coded.
+        if(colName == "AIMKEY" && i == 0)
+            pRecordBuffer->setKey(colValue.toInt());
+
     }
 }
-
-void ConfigurationDatabaseQueryExecutor::BuildResult(sqlite3_stmt* pStmt)
-{
-    if (pStmt == NULL)
-        return;
-
-    int count = sqlite3_column_count(pStmt);
-    {
-        DbRecordBuffer* pRecord = new DbRecordBuffer();
-
-        QString str0 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 0));
-        pRecord->setKey(str0.toInt());
-
-        DbField* dbf0 = new DbField();
-        dbf0->name("AIMKEY");
-        dbf0->value(str0);
-        pRecord->addField(dbf0);
-
-        QString str1 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 1));
-        DbField* dbf1 = new DbField();
-        dbf1->name("Layer");
-        dbf1->value(str1);
-        pRecord->addField(dbf1);
-
-        QString str2 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 2));
-        DbField* dbf2 = new DbField();
-        dbf2->name("Type");
-        dbf2->value(str2);
-        pRecord->addField(dbf2);
-
-        QString str3 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 3));
-        DbField* dbf3 = new DbField();
-        dbf3->name("Name");
-        dbf3->value(str3);
-        pRecord->addField(dbf3);
-
-
-        QString str4 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 4));
-        DbField* dbf4 = new DbField();
-        dbf4->name("Value");
-        dbf4->value(str4);
-        pRecord->addField(dbf4);
-
-        QString str5 = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, 5));
-        DbField* dbf5 = new DbField();
-        dbf5->name("Parent");
-        dbf5->value(str5);
-        pRecord->addField(dbf5);
-
-        qDebug() << str0 << " " << str1 << " " << str2 << "  " << str3 << " " << str4 << " " << str5;
-
-        ((QList<DbRecordBuffer*>*)mpResult)->append(pRecord);
-    }
-}
-

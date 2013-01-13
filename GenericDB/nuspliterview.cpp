@@ -31,19 +31,16 @@ void NuSpliterView::onLoadView()
     if(m_pRecord == NULL)
         return;
 
+    std::vector<DbRecordBuffer*> pRecords;
     QString sqlQuery = QString("select * from Configurations where parent=%1").arg(m_pRecord->getKey());
-    ConnectionSqlite::get()->ExecuteSql(sqlQuery,&m_querier);
+    ConnectionSqlite::get()->ExecuteSql(sqlQuery,pRecords);
 
-    qDebug() << "spliteview " << sqlQuery;
-
-    QList<DbRecordBuffer*>* pRecords = NULL;
-    pRecords = (QList<DbRecordBuffer*>*)m_querier.GetResult();
-    if(pRecords != NULL)
+    if(pRecords.size() > 0)
     {
-        int count = pRecords->size();
+        int count = pRecords.size();
         for(int i = 0; i < count; i++)
         {
-            DbRecordBuffer* pRecordBuffer = pRecords->at(i);
+            DbRecordBuffer* pRecordBuffer = pRecords.at(i);
             DbField* pField = pRecordBuffer->getField(3);
             QString name = pField->value();
             if(name == "Win1" || name == "Win2")
@@ -61,15 +58,14 @@ void NuSpliterView::onLoadView()
                 }
                 else if(strValue == "Spliter")
                 {
+
+                    std::vector<DbRecordBuffer*> childRecs;
                     QString sqlQuery = QString("select * from Configurations where parent=%1").arg(pRecordBuffer->getKey());
-                    qDebug() << sqlQuery;
-                    ConfigurationDatabaseQueryExecutor* spliterQuery = new ConfigurationDatabaseQueryExecutor();
-                    ConnectionSqlite::get()->ExecuteSql(sqlQuery,spliterQuery);
-                    QList<DbRecordBuffer*>* childRecs = NULL;
-                    childRecs = (QList<DbRecordBuffer*>*)spliterQuery->GetResult();
-                    if(childRecs != NULL && childRecs->size() == 1)
+                    ConnectionSqlite::get()->ExecuteSql(sqlQuery,childRecs);
+
+                    if(childRecs.size() == 1)
                     {
-                        DbRecordBuffer* pSpliterBuf = childRecs->at(0);
+                        DbRecordBuffer* pSpliterBuf = childRecs.at(0);
                         int id = pSpliterBuf->getKey();
                         NuSpliterView* spliter = new NuSpliterView(this, pSpliterBuf);
                         m_pLayout->addLayout(spliter->layout());

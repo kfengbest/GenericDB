@@ -4,10 +4,9 @@
 NuListView::NuListView(NuViewBase* parentView, DbRecordBuffer* pData)
     : NuViewBase(parentView, pData)
 {
-    m_widge = new QListWidget;
+    m_widget = new QTableWidget;
+    m_widget->verticalHeader()->setVisible(false);
 
-    QListWidgetItem* item0 = new QListWidgetItem("item0");
-    m_widge->addItem(item0);
 }
 
 void NuListView::onLoadView()

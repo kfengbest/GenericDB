@@ -21,6 +21,7 @@ ConfigurationEditor::ConfigurationEditor(QWidget *parent) :
 
     m_list = new QTableWidget(this);
     layout->addWidget(m_list);
+    m_list->verticalHeader()->setVisible(false);
     m_list->setColumnCount(6);
     m_list->setRowCount(8);
     QStringList headers;
@@ -44,20 +45,15 @@ void ConfigurationEditor::build(int key, QTreeWidgetItem* p)
 {
 
     QString sqlQuery = QString("select * from Configurations where parent=%1").arg(key);
+    std::vector<DbRecordBuffer*> pRecords;
+    ConnectionSqlite::get()->ExecuteSql(sqlQuery,pRecords);
 
-//    qDebug() << sqlQuery;
-
-    ConfigurationDatabaseQueryExecutor querier;
-    ConnectionSqlite::get()->ExecuteSql(sqlQuery,&querier);
-
-    QList<DbRecordBuffer*>* pRecords = NULL;
-    pRecords = (QList<DbRecordBuffer*>*)querier.GetResult();
-    if(pRecords != NULL)
+    if(pRecords.size() > 0)
     {
-        int count = pRecords->size();
+        int count = pRecords.size();
         for(int i = 0; i < count; i++)
         {
-            DbRecordBuffer* pRecordBuffer = pRecords->at(i);
+            DbRecordBuffer* pRecordBuffer = pRecords.at(i);
 
             DbField* pField = pRecordBuffer->getField(3);
             QString cap = pField->value();
@@ -126,18 +122,15 @@ void ConfigurationEditor::DislayInList(int aimkey)
     m_list->clear();
 
     QString sqlQuery = QString("select * from Configurations where aimkey=%1").arg(aimkey);
+    std::vector<DbRecordBuffer*> pRecords;
+    ConnectionSqlite::get()->ExecuteSql(sqlQuery,pRecords);
 
-    ConfigurationDatabaseQueryExecutor querier;
-    ConnectionSqlite::get()->ExecuteSql(sqlQuery,&querier);
-
-    QList<DbRecordBuffer*>* pRecords = NULL;
-    pRecords = (QList<DbRecordBuffer*>*)querier.GetResult();
-    if(pRecords != NULL)
+    if(pRecords.size() > 0)
     {
-        int count = pRecords->size();
+        int count = pRecords.size();
         for(int i = 0; i < count; i++)
         {
-            DbRecordBuffer* pRecordBuffer = pRecords->at(i);
+            DbRecordBuffer* pRecordBuffer = pRecords.at(i);
 
             int fieldCounts = pRecordBuffer->count();
             for(int j = 0; j < fieldCounts; j++)

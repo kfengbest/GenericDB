@@ -3,10 +3,12 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <vector>
 
 struct sqlite3;
 struct sqlite3_stmt;
 class DatabaseQueryExecutor;
+class DbRecordBuffer;
 
 class ConnectionSqlite
 {
@@ -16,42 +18,18 @@ public:
 
     static ConnectionSqlite* get();
 
-    virtual bool ExecuteSql(const QString& sql, DatabaseQueryExecutor* executor = NULL);
+    bool ExecuteSql(const QString& sql);
+    bool ExecuteSql(const QString& sql, std::vector<DbRecordBuffer*>& results);
+
+    bool buildRecordBufferTypes(const QString& sql, DbRecordBuffer* pRecordBuffer);
 
 private:
     sqlite3* mpDatabase;
     bool ConnectToDatabase(const QString& path);
     void CloseDatabase();
 
+    void buildRowRecord(sqlite3_stmt* pStmt, DbRecordBuffer* pRecordBuffer);
 };
 
-
-class DatabaseQueryExecutor
-{
-public:
-    virtual ~DatabaseQueryExecutor(){};
-    virtual void BuildResult(sqlite3_stmt* pStmt) = 0;
-    void* GetResult() {return mpResult;}
-
-protected:
-    void *mpResult;
-};
-
-class SingleColumnDatabaseQueryExecutor : public DatabaseQueryExecutor
-{
-public:
-    SingleColumnDatabaseQueryExecutor();
-    ~SingleColumnDatabaseQueryExecutor();
-    virtual void BuildResult(sqlite3_stmt* pStmt);
-    void ClearResult();
-};
-
-class ConfigurationDatabaseQueryExecutor : public DatabaseQueryExecutor
-{
-public:
-    ConfigurationDatabaseQueryExecutor();
-    ~ConfigurationDatabaseQueryExecutor();
-    virtual void BuildResult(sqlite3_stmt* pStmt);
-};
 
 #endif // CONNECTIONSQLITE_H

@@ -19,7 +19,6 @@ protected:
 public: // TODO: temp
     NuViewBase* m_pParentView;
     DbRecordBuffer* m_pRecord;
-    ConfigurationDatabaseQueryExecutor m_querier;
 
 };
 
