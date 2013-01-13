@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    m_mainLayout = new QHBoxLayout(ui->centralWidget);
+    ui->centralWidget->setLayout(m_mainLayout);
+
     QString sqlQuery2 = QString("select * from Configurations where 1=0");
     DbRecordBuffer* pRB = new DbRecordBuffer();
     ConnectionSqlite::get()->buildRecordBufferTypes(sqlQuery2, pRB);
@@ -29,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if(pRecords.size() > 0)
     {
             DbRecordBuffer* pRecordBuffer = pRecords.at(0);
-            m_pRootView = new NuSpliterView(ui->horizontalLayout, pRecordBuffer);
+            m_pRootView = new NuSpliterView(m_mainLayout, pRecordBuffer);
             m_pRootView->onLoadView();
     }
 
@@ -42,26 +45,17 @@ MainWindow::~MainWindow()
 
 QBoxLayout* MainWindow::layout() const
 {
-    return ui->horizontalLayout;
+    return m_mainLayout;
 }
 
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_actionConfiguration_triggered()
 {
 
-//    QString sqlInsert = QString("insert into Configurations values(20,0,0,\"Folder\",\"Name\", 1)");
-//    ExecuteSql(sqlInsert);
-
-
-//    QString sqlDelete = QString("delete from Configurations where AIMKEY=20");
-//    ExecuteSql(sqlDelete);
-
-
-    ConfigurationEditor* pEditor = new ConfigurationEditor();
-    pEditor->show();
-
-
-
-
 }
 
+void MainWindow::on_actionConfiguration_2_triggered()
+{
+    ConfigurationEditor* pEditor = new ConfigurationEditor();
+    pEditor->show();
+}

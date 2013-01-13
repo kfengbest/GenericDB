@@ -5,7 +5,6 @@ NuTabView::NuTabView(NuViewBase* parentView, DmFolder* pData)
     : NuViewBase(parentView, pData)
 {
     m_widge = new QTabWidget;
-
 }
 
 void NuTabView::onLoadView()

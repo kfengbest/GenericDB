@@ -13,6 +13,7 @@ class MainWindow;
 class QTreeWidgetItem;
 class ConnectionSqlite;
 class NuSpliterView;
+class QHBoxLayout;
 
 class MainWindow : public QMainWindow,
                    public NuViewBase
@@ -26,12 +27,16 @@ public:
     virtual QBoxLayout* layout() const;
 
 private slots:
-    void on_pushButton_clicked();
+
+    void on_actionConfiguration_triggered();
+
+    void on_actionConfiguration_2_triggered();
 
 private:
     Ui::MainWindow *ui;
     NuSpliterView* m_pRootView;
 
+    QHBoxLayout* m_mainLayout;
 
 };
 
