@@ -9,19 +9,20 @@
 class NuViewBase
 {
 public:
-    NuViewBase(NuViewBase* parentView, DmFolder* pData);
+    NuViewBase(NuViewBase* parentView, DbRecordBuffer* pConfigRecord);
 
     virtual void onLoadView() {}
     virtual QWidget* view() const {return NULL;}
     virtual QBoxLayout* layout() const {return NULL;}
 
     DmFolder* dmFolder() {return m_dmFolder;}
+    DbRecordBuffer* configRecord() { return m_pConfigRecord;}
 
 protected:
 
 public: // TODO: temp
     NuViewBase* m_pParentView;
- //   DbRecordBuffer* m_pRecord;
+    DbRecordBuffer* m_pConfigRecord;
     DmFolder* m_dmFolder;
 };
 

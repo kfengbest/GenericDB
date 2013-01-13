@@ -7,8 +7,7 @@
 
 
 NuSpliterView::NuSpliterView(NuViewBase* parentView, DbRecordBuffer* pData)
-    : NuViewBase(parentView, NULL),
-      m_pRecord(pData)
+    : NuViewBase(parentView, pData)
 {
     if(pData != NULL)
     {
@@ -22,19 +21,18 @@ NuSpliterView::NuSpliterView(NuViewBase* parentView, DbRecordBuffer* pData)
 }
 
 NuSpliterView::NuSpliterView(QBoxLayout* layout, DbRecordBuffer* pData)
-    : NuViewBase(NULL, NULL),
-      m_pRecord(pData)
+    : NuViewBase(NULL, pData)
 {
     m_pLayout = layout;
 }
 
 void NuSpliterView::onLoadView()
 {
-    if(m_pRecord == NULL)
+    if(this->configRecord() == NULL)
         return;
 
     std::vector<DbRecordBuffer*> pRecords;
-    QString sqlQuery = QString("select * from Configurations where parent=%1").arg(m_pRecord->getKey());
+    QString sqlQuery = QString("select * from Configurations where parent=%1").arg(this->configRecord()->getKey());
     ConnectionSqlite::get()->ExecuteSql(sqlQuery,pRecords);
 
     if(pRecords.size() > 0)
@@ -54,8 +52,7 @@ void NuSpliterView::onLoadView()
 
                 if(strValue == "Tree")
                 {
-                    DmFolder* pFolder1 = new DmFolder("Folder_Structure", "View_AllStructure");
-                    NuViewBase* tree = new NuTreeView(this, pFolder1);
+                    NuViewBase* tree = new NuTreeView(this, pRecordBuffer);
                     m_pLayout->addWidget(tree->view());
                     tree->onLoadView();
                 }
@@ -77,15 +74,13 @@ void NuSpliterView::onLoadView()
                 }
                 else if(strValue == "List")
                 {
-                    DmFolder* pFolder1 = new DmFolder("Folder_AllProject", "View_AllProject");
-                    NuListView* list = new NuListView(this, pFolder1);
+                    NuListView* list = new NuListView(this, pRecordBuffer);
                     m_pLayout->addWidget(list->view());
                     list->onLoadView();
                 }
                 else if(strValue == "Tab")
                 {
-                    DmFolder* pFolder1 = new DmFolder("Folder_MainFrame_Project", "View_AllProject");
-                    NuTabView* tab = new NuTabView(this, pFolder1);
+                    NuTabView* tab = new NuTabView(this, pRecordBuffer);
                     m_pLayout->addWidget(tab->view());
                     tab->onLoadView();
                 }

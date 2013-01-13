@@ -7,7 +7,7 @@
 class NuTabView : public NuViewBase
 {
 public:
-    NuTabView(NuViewBase* parentView, DmFolder* pData);
+    NuTabView(NuViewBase* parentView, DbRecordBuffer *pData);
 
     virtual QWidget* view() const {return m_widge;}
     virtual void onLoadView();

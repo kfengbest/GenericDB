@@ -18,7 +18,6 @@ protected:
 
 private:
     QBoxLayout* m_pLayout;
-    DbRecordBuffer* m_pRecord;
 };
 
 #endif // NUSPLITERVIEW_H

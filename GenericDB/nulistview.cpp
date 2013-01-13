@@ -2,7 +2,7 @@
 
 #include <connectionsqlite.h>
 
-NuListView::NuListView(NuViewBase* parentView, DmFolder* pData)
+NuListView::NuListView(NuViewBase* parentView, DbRecordBuffer *pData)
     : NuViewBase(parentView, pData)
 {
     m_widget = new QTableWidget;

@@ -8,7 +8,7 @@
 class NuTreeView : public NuViewBase
 {
 public:
-    NuTreeView(NuViewBase* parentView, DmFolder* pData);
+    NuTreeView(NuViewBase* parentView, DbRecordBuffer *pData);
 
     virtual QWidget* view() const {return m_tree;}
     virtual void onLoadView();

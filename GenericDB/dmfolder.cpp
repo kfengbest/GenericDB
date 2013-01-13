@@ -28,6 +28,8 @@ void DmFolder::init()
     QString sql = QString("select * from %1").arg(m_dbViewName);
     ConnectionSqlite::get()->ExecuteSql(sql, m_records);
 
+    qDebug() << "DmFolder::ctor " << sql;
+
 }
 
 DbRecordBuffer* DmFolder::getRecordAt(int index)
