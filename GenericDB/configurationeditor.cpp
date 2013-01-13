@@ -13,7 +13,7 @@ ConfigurationEditor::ConfigurationEditor(QWidget *parent) :
     this->setLayout(layout);
 
     m_tree = new QTreeWidget(this);
-    m_tree->setMaximumWidth(200);
+    m_tree->setMaximumWidth(400);
     layout->addWidget(m_tree);
 
     QObject::connect(m_tree,SIGNAL(itemPressed(QTreeWidgetItem *, int)),this,SLOT(SlotItemClicked(
