@@ -22,7 +22,7 @@ private:
     QString m_folderName;
     QString m_dbViewName;
 
-    DbRecordBuffer* m_pRecordBuffer;
+    DbRecordBuffer* m_pColumnType;
     DbView* m_dbView;
 
     RecordsMap m_recordsMap;
