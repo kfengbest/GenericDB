@@ -1,7 +1,7 @@
 #ifndef DMFOLDER_H
 #define DMFOLDER_H
 
-#include <QString>
+#include <string>
 #include <vector>
 
 
@@ -11,14 +11,14 @@ class DbView;
 class DmFolder
 {
 public:
-    DmFolder(const QString& folderName, const QString& dbViewName);
+    DmFolder(const std::string& folderName, const std::string& dbViewName);
 
     DbRecordBuffer* getColumnType() {return m_pColumnType;}
 
     int recordsCount() const;
     DbRecordBuffer* getRecordAt(int index);
 
-    QString dbViewName() const {return m_dbViewName;}
+    std::string dbViewName() const {return m_dbViewName;}
     DbView* dbView() const {return m_dbView;}
 
 
@@ -27,8 +27,8 @@ private:
 
 private:
 
-    QString m_folderName;
-    QString m_dbViewName;
+    std::string m_folderName;
+    std::string m_dbViewName;
 
     DbRecordBuffer* m_pColumnType;
     DbView* m_dbView;

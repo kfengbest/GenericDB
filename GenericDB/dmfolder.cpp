@@ -4,7 +4,7 @@
 #include <algorithm>
 #include "connectionsqlite.h"
 
-DmFolder::DmFolder(const QString &folderName, const QString &dbViewName)
+DmFolder::DmFolder(const std::string& folderName, const std::string& dbViewName)
     : m_folderName(folderName),
       m_dbViewName(dbViewName),
       m_pColumnType(NULL),
@@ -18,17 +18,15 @@ void DmFolder::init()
     if(m_pColumnType == NULL)
     {
         m_pColumnType = new DbRecordBuffer();
-        QString sql = QString("select * from %1 where 1=0").arg(m_dbViewName);
-        ConnectionSqlite::get()->buildRecordBufferTypes(sql, m_pColumnType);
+        std::string sql = "select * from " + m_dbViewName  + "where 1=0";
+        ConnectionSqlite::get()->buildRecordBufferTypes(sql.c_str(), m_pColumnType);
     }
 
     if(m_dbView == NULL)
         m_dbView = new DbView();
 
-    QString sql = QString("select * from %1").arg(m_dbViewName);
-    ConnectionSqlite::get()->ExecuteSql(sql, m_records);
-
-    qDebug() << "DmFolder::ctor " << sql;
+    std::string sql = "select * from " + m_dbViewName;
+    ConnectionSqlite::get()->ExecuteSql(sql.c_str(), m_records);
 
 }
 

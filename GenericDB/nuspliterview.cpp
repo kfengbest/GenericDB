@@ -12,7 +12,7 @@ NuSpliterView::NuSpliterView(NuViewBase* parentView, DbRecordBuffer* pData)
     if(pData != NULL)
     {
         DbField* pFieldValue = pData->getField(4);
-        QString strValue = pFieldValue->value();
+        QString strValue = QString::fromLocal8Bit(pFieldValue->value().c_str());
         if(strValue == "H")
             m_pLayout = new QHBoxLayout;
         else if(strValue == "V")
@@ -32,7 +32,7 @@ void NuSpliterView::onLoadView()
         return;
 
     std::vector<DbRecordBuffer*> pRecords;
-    QString sqlQuery = QString("select * from Configurations where parent=%1").arg(this->configRecord()->getKey());
+    std::string sqlQuery = "select * from Configurations where parent=" + this->configRecord()->getKey();
     ConnectionSqlite::get()->ExecuteSql(sqlQuery,pRecords);
 
     if(pRecords.size() > 0)
@@ -42,13 +42,13 @@ void NuSpliterView::onLoadView()
         {
             DbRecordBuffer* pRecordBuffer = pRecords.at(i);
             DbField* pField = pRecordBuffer->getField(3);
-            QString name = pField->value();
+            QString name = QString::fromLocal8Bit(pField->value().c_str());
             if(name == "Win1" || name == "Win2")
             {
                 DbField* pFieldValue = pRecordBuffer->getField(4);
-                QString strValue = pFieldValue->value();
+                QString strValue = QString::fromLocal8Bit(pFieldValue->value().c_str());
 
-                qDebug() << "pFieldValue " << strValue;
+                //qDebug() << "pFieldValue " << strValue;
 
                 if(strValue == "Tree")
                 {
@@ -60,7 +60,7 @@ void NuSpliterView::onLoadView()
                 {
 
                     std::vector<DbRecordBuffer*> childRecs;
-                    QString sqlQuery = QString("select * from Configurations where parent=%1").arg(pRecordBuffer->getKey());
+                    std::string sqlQuery = "select * from Configurations where parent=" + pRecordBuffer->getKey();
                     ConnectionSqlite::get()->ExecuteSql(sqlQuery,childRecs);
 
                     if(childRecs.size() == 1)

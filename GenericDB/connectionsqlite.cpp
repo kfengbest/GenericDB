@@ -3,10 +3,11 @@
 #include "sqlite3.h"
 #include "dbrecordbuffer.h"
 #include "dbfield.h"
+#include <sstream>
 
 ConnectionSqlite::ConnectionSqlite()
 {
-    QString path("/Users/fengka/Src/GenericDB/DBScript/Compass.db");
+    std::string path("/Users/fengka/Src/GenericDB/DBScript/Compass.db");
     ConnectToDatabase(path);
 }
 
@@ -22,9 +23,9 @@ ConnectionSqlite::~ConnectionSqlite()
  }
 
 
-bool ConnectionSqlite::ConnectToDatabase(const QString& path)
+bool ConnectionSqlite::ConnectToDatabase(const std::string& path)
 {
-    int result = sqlite3_open(path.toAscii().constData(), &mpDatabase);
+    int result = sqlite3_open(path.c_str(), &mpDatabase);
     if (result == SQLITE_OK)
         return true;
 
@@ -43,32 +44,19 @@ void ConnectionSqlite::CloseDatabase()
 }
 
 // insert, delete, update.
-bool ConnectionSqlite::ExecuteSql(const QString& sql)
+bool ConnectionSqlite::ExecuteSql(const std::string& sql)
 {
-    if (mpDatabase == NULL || sql.isEmpty())
+    if (mpDatabase == NULL || sql.empty())
         return false;
 
-    QByteArray sqlByteArray = sql.toUtf8();
-
-    int len = sqlByteArray.length();
-    char* sSql = new char[len + 1];
-    sSql[len] = 0;
-
-#ifdef AD_OS_WIN
-    strcpy_s(sSql, len+1, sqlByteArray.constData());
-#else
-    strcpy(sSql, sqlByteArray.constData());
-#endif
-
+    int len = -1;
     bool bRet = true;
     sqlite3_stmt* pStmt = NULL;
     const char* pTail = NULL;
-    int rc = sqlite3_prepare(mpDatabase, sSql, len, &pStmt, &pTail);
-//    Q_ASSERT(rc == SQLITE_OK);
+    int rc = sqlite3_prepare(mpDatabase, sql.c_str(), len, &pStmt, &pTail);
     if (rc == SQLITE_OK)
     {
         rc = sqlite3_step(pStmt);
-        Q_ASSERT(rc == SQLITE_DONE || rc == SQLITE_ROW);
         if (rc == SQLITE_DONE)
             bRet = true;
         else
@@ -78,38 +66,23 @@ bool ConnectionSqlite::ExecuteSql(const QString& sql)
         bRet = false;
 
     sqlite3_finalize(pStmt);
-    delete []sSql;
 
     return bRet;
 }
 
-bool ConnectionSqlite::ExecuteSql(const QString& sql, std::vector<DbRecordBuffer*>& results)
+bool ConnectionSqlite::ExecuteSql(const std::string& sql, std::vector<DbRecordBuffer*>& results)
 {
-    if (mpDatabase == NULL || sql.isEmpty())
+    if (mpDatabase == NULL || sql.empty())
         return false;
 
-    QByteArray sqlByteArray = sql.toUtf8();
-
-    int len = sqlByteArray.length();
-    char* sSql = new char[len + 1];
-    sSql[len] = 0;
-
-#ifdef AD_OS_WIN
-    strcpy_s(sSql, len+1, sqlByteArray.constData());
-#else
-    strcpy(sSql, sqlByteArray.constData());
-#endif
-
+    int len = -1;
     bool bRet = true;
     sqlite3_stmt* pStmt = NULL;
     const char* pTail = NULL;
-    int rc = sqlite3_prepare(mpDatabase, sSql, len, &pStmt, &pTail);
-//    Q_ASSERT(rc == SQLITE_OK);
+    int rc = sqlite3_prepare(mpDatabase, sql.c_str(), len, &pStmt, &pTail);
     if (rc == SQLITE_OK)
     {
-
         rc = sqlite3_step(pStmt);
-        Q_ASSERT(rc == SQLITE_DONE || rc == SQLITE_ROW);
         if (rc == SQLITE_DONE)
             bRet = true;
 
@@ -126,38 +99,24 @@ bool ConnectionSqlite::ExecuteSql(const QString& sql, std::vector<DbRecordBuffer
         bRet = false;
 
     sqlite3_finalize(pStmt);
-    delete []sSql;
 
     return bRet;
 }
 
 // select * from xxx where 1=0;
-bool ConnectionSqlite::buildRecordBufferTypes(const QString& sql, DbRecordBuffer* pRecordBuffer)
+bool ConnectionSqlite::buildRecordBufferTypes(const std::string& sql, DbRecordBuffer* pRecordBuffer)
 {
-    if (mpDatabase == NULL || sql.isEmpty())
+    if (mpDatabase == NULL || sql.empty())
         return false;
 
-    QByteArray sqlByteArray = sql.toUtf8();
-
-    int len = sqlByteArray.length();
-    char* sSql = new char[len + 1];
-    sSql[len] = 0;
-
-#ifdef AD_OS_WIN
-    strcpy_s(sSql, len+1, sqlByteArray.constData());
-#else
-    strcpy(sSql, sqlByteArray.constData());
-#endif
-
+    int len = -1;
     bool bRet = true;
     sqlite3_stmt* pStmt = NULL;
     const char* pTail = NULL;
-    int rc = sqlite3_prepare(mpDatabase, sSql, len, &pStmt, &pTail);
-    //Q_ASSERT(rc == SQLITE_OK);
+    int rc = sqlite3_prepare(mpDatabase, sql.c_str(), len, &pStmt, &pTail);
     if (rc == SQLITE_OK)
     {
         rc = sqlite3_step(pStmt);
-        Q_ASSERT(rc == SQLITE_DONE || rc == SQLITE_ROW);
         bRet = true;
 
         buildRowRecord(pStmt, pRecordBuffer);
@@ -168,7 +127,6 @@ bool ConnectionSqlite::buildRecordBufferTypes(const QString& sql, DbRecordBuffer
         bRet = false;
 
     sqlite3_finalize(pStmt);
-    delete []sSql;
 
     return bRet;
 }
@@ -178,11 +136,14 @@ void ConnectionSqlite::buildRowRecord(sqlite3_stmt* pStmt, DbRecordBuffer* pReco
     int count = sqlite3_column_count(pStmt);
     for(int i = 0; i < count; i++)
     {
-        QString colName = QString::fromUtf8(sqlite3_column_name(pStmt, i));
-        QString colType = QString::fromUtf8(sqlite3_column_decltype(pStmt, i));
-        QString colValue = QString::fromUtf8((char*)sqlite3_column_blob(pStmt, i));
+        std::string colName = std::string(sqlite3_column_name(pStmt, i));
+        std::string colType = std::string(sqlite3_column_decltype(pStmt, i));
+        int n = sqlite3_column_bytes(pStmt, i);
 
-        //qDebug() << "Column Num:" << count << " Name: " << colName << " Type " << colType << " value: " << colValue;
+        const void* txt = sqlite3_column_blob(pStmt, i);
+        std::string colValue =  std::string(static_cast<const char*>(txt), n);
+
+     //   qDebug() << "Column Num:" << count << " Name: " << QString::fromStdString(colName) << " Type " << QString::fromStdString(colType) << " value: " << QString::fromStdString(colValue);
 
         DbField* dbf = new DbField();
         dbf->name(colName);
@@ -192,7 +153,12 @@ void ConnectionSqlite::buildRowRecord(sqlite3_stmt* pStmt, DbRecordBuffer* pReco
 
         // TODO: this is hard coded.
         if(colName == "AIMKEY" && i == 0)
-            pRecordBuffer->setKey(colValue.toInt());
+        {
+            std::stringstream ss(colValue);
+            int iv;
+            ss >> iv;
+            pRecordBuffer->setKey(iv);
+        }
 
     }
 }

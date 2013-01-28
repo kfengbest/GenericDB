@@ -1,31 +1,31 @@
 #ifndef RECORDFIELD_H
 #define RECORDFIELD_H
 
-#include <QString>
+#include <string>
 
 class DbField
 {
 public:
     DbField();
 
-    QString name() const {return m_Name;}
-    void name(const QString& n){ m_Name = n;}
+    std::string name() const {return m_Name;}
+    void name(const std::string& n){ m_Name = n;}
 
-    QString type() const {return m_Type;}
-    void type(const QString& n){ m_Type = n;}
+    std::string type() const {return m_Type;}
+    void type(const std::string& n){ m_Type = n;}
 
-    QString value() const {return m_Value;}
-    void value(const QString& n){ m_Value = n;}
+    std::string value() const {return m_Value;}
+    void value(const std::string& n){ m_Value = n;}
 
-    QString length() const {return m_Length;}
-    void length(const QString& n){ m_Length = n;}
+    std::string length() const {return m_Length;}
+    void length(const std::string& n){ m_Length = n;}
 
 
 private:
-    QString m_Name;
-    QString m_Value;
-    QString m_Type;
-    QString m_Length;
+    std::string m_Name;
+    std::string m_Value;
+    std::string m_Type;
+    std::string m_Length;
 };
 
 #endif // RECORDFIELD_H

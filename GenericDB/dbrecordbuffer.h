@@ -1,9 +1,8 @@
 #ifndef RECORDBUFFER_H
 #define RECORDBUFFER_H
-#include <QList>
 
 #include "dbfield.h"
-
+#include <vector>
 
 class DbRecordBuffer
 {
@@ -15,11 +14,11 @@ public:
     int getKey() const {return m_key;}
 
     DbField* getField(int i) const {return m_fields.at(i);}
-    void addField(DbField* f) { m_fields.append(f);}
+    void addField(DbField* f) { m_fields.push_back(f);}
     int count() const {return m_fields.size();}
 
 private:
-    QList<DbField*> m_fields;
+    std::vector<DbField*> m_fields;
 
     int m_key;
 

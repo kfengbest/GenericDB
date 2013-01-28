@@ -20,13 +20,13 @@ MainWindow::MainWindow(QWidget *parent) :
     m_mainLayout = new QHBoxLayout(ui->centralWidget);
     ui->centralWidget->setLayout(m_mainLayout);
 
-    QString sqlQuery2 = QString("select * from Configurations where 1=0");
+    std::string sqlQuery2 = "select * from Configurations where 1=0";
     DbRecordBuffer* pRB = new DbRecordBuffer();
     ConnectionSqlite::get()->buildRecordBufferTypes(sqlQuery2, pRB);
     delete pRB;
 
     std::vector<DbRecordBuffer*> pRecords;
-    QString sqlQuery = QString("select * from Configurations where AIMKEY=101");
+    std::string sqlQuery = "select * from Configurations where AIMKEY=101";
     ConnectionSqlite::get()->ExecuteSql(sqlQuery, pRecords);
 
     if(pRecords.size() > 0)

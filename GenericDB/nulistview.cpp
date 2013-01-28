@@ -1,6 +1,7 @@
 #include "nulistview.h"
 
 #include <connectionsqlite.h>
+#include <QtGui>
 
 NuListView::NuListView(NuViewBase* parentView, DbRecordBuffer *pData)
     : NuViewBase(parentView, pData)
@@ -13,7 +14,7 @@ NuListView::NuListView(NuViewBase* parentView, DbRecordBuffer *pData)
     QStringList headers;
     for(int i = 0; i < pColumnType->count(); i++)
     {
-        headers << pColumnType->getField(i)->name();
+        headers << QString::fromLocal8Bit(pColumnType->getField(i)->name().c_str()) ;
     }
     m_widget->setHorizontalHeaderLabels(headers);
 
@@ -29,7 +30,10 @@ void NuListView::onLoadView()
         DbRecordBuffer* pRow = this->dmFolder()->getRecordAt(r);
         for(int c = 0; c < pRow->count(); c++)
         {
-           QString strValue = pRow->getField(c)->value();
+
+           std::string cstr = pRow->getField(c)->value();
+           QString strValue = QString::fromLocal8Bit(cstr.c_str());
+
            QTableWidgetItem* item = new QTableWidgetItem(strValue);
            m_widget->setItem(r,c,item);
         }

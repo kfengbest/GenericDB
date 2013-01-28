@@ -1,9 +1,8 @@
 #ifndef CONNECTIONSQLITE_H
 #define CONNECTIONSQLITE_H
 
-#include <QtCore>
-#include <QtGui>
 #include <vector>
+#include <string>
 
 struct sqlite3;
 struct sqlite3_stmt;
@@ -18,14 +17,14 @@ public:
 
     static ConnectionSqlite* get();
 
-    bool ExecuteSql(const QString& sql);
-    bool ExecuteSql(const QString& sql, std::vector<DbRecordBuffer*>& results);
+    bool ExecuteSql(const std::string& sql);
+    bool ExecuteSql(const std::string& sql, std::vector<DbRecordBuffer*>& results);
 
-    bool buildRecordBufferTypes(const QString& sql, DbRecordBuffer* pRecordBuffer);
+    bool buildRecordBufferTypes(const std::string& sql, DbRecordBuffer* pRecordBuffer);
 
 private:
     sqlite3* mpDatabase;
-    bool ConnectToDatabase(const QString& path);
+    bool ConnectToDatabase(const std::string& path);
     void CloseDatabase();
 
     void buildRowRecord(sqlite3_stmt* pStmt, DbRecordBuffer* pRecordBuffer);

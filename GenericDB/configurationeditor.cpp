@@ -5,6 +5,9 @@
 #include "dbrecordbuffer.h"
 #include "dbfield.h"
 #include "connectionsqlite.h"
+#include <QtGui>
+#include "Global.h"
+
 
 ConfigurationEditor::ConfigurationEditor(QWidget *parent) :
     QWidget(parent)
@@ -44,7 +47,7 @@ ConfigurationEditor::ConfigurationEditor(QWidget *parent) :
 void ConfigurationEditor::build(int key, QTreeWidgetItem* p)
 {
 
-    QString sqlQuery = QString("select * from Configurations where parent=%1").arg(key);
+    std::string sqlQuery = "select * from Configurations where parent=" + ConvertToString<int>(key);
     std::vector<DbRecordBuffer*> pRecords;
     ConnectionSqlite::get()->ExecuteSql(sqlQuery,pRecords);
 
@@ -56,7 +59,7 @@ void ConfigurationEditor::build(int key, QTreeWidgetItem* p)
             DbRecordBuffer* pRecordBuffer = pRecords.at(i);
 
             DbField* pField = pRecordBuffer->getField(3);
-            QString cap = pField->value();
+            QString cap = QString::fromStdString(pField->value());
             QTreeWidgetItem* pItem0 = new QTreeWidgetItem(QStringList() << cap);
             pItem0->setData(0,Qt::UserRole,QVariant(int(pRecordBuffer->getKey())));
 
@@ -121,7 +124,7 @@ void ConfigurationEditor::DislayInList(int aimkey)
 {
     m_list->clear();
 
-    QString sqlQuery = QString("select * from Configurations where aimkey=%1").arg(aimkey);
+    std::string sqlQuery = "select * from Configurations where aimkey=" + ConvertToString<int>(aimkey);
     std::vector<DbRecordBuffer*> pRecords;
     ConnectionSqlite::get()->ExecuteSql(sqlQuery,pRecords);
 
@@ -136,7 +139,7 @@ void ConfigurationEditor::DislayInList(int aimkey)
             for(int j = 0; j < fieldCounts; j++)
             {
                 DbField* pField = pRecordBuffer->getField(j);
-                QString strValue = pField->value();
+                QString strValue = QString::fromStdString(pField->value());
                 qDebug() << strValue;
 
                 QTableWidgetItem* item = new QTableWidgetItem(strValue);
@@ -153,6 +156,6 @@ void ConfigurationEditor::itemChanged(QTableWidgetItem *item)
     QString newValue = item->text();
     qDebug() << newValue;
 
-    QString sql = QString("update Configurations set Name = \"%1\"").arg(newValue);
+   // QString sql = QString("update Configurations set Name = \"%1\"").arg(newValue);
     //ConnectionSqlite::get()->ExecuteSql(sql);
 }

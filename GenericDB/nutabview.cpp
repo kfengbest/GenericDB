@@ -3,6 +3,7 @@
 #include "nuspliterview.h"
 #include "nulistview.h"
 #include "nutreeview.h"
+#include "Global.h"
 
 NuTabView::NuTabView(NuViewBase* parentView, DbRecordBuffer* pData)
     : NuViewBase(parentView, pData)
@@ -17,7 +18,7 @@ void NuTabView::onLoadView()
         return;
 
     std::vector<DbRecordBuffer*> pRecords;
-    QString sqlQuery = QString("select * from Configurations where parent=%1").arg(this->configRecord()->getKey());
+    std::string sqlQuery = "select * from Configurations where parent=" + ConvertToString<int>(this->configRecord()->getKey());
     ConnectionSqlite::get()->ExecuteSql(sqlQuery,pRecords);
 
     if(pRecords.size() > 0)
@@ -27,13 +28,13 @@ void NuTabView::onLoadView()
         {
             DbRecordBuffer* pRecordBuffer = pRecords.at(i);
             DbField* pField = pRecordBuffer->getField(3);
-            QString name = pField->value();
+            QString name = QString::fromLocal8Bit(pField->value().c_str()) ;
             if(name.contains("Tab"))
             {
                 DbField* pFieldValue = pRecordBuffer->getField(4);
-                QString strValue = pFieldValue->value();
+                QString strValue = QString::fromLocal8Bit(pFieldValue->value().c_str());
 
-                qDebug() << "pFieldValue " << strValue;
+                //qDebug() << "pFieldValue " << strValue;
 
                 if(strValue == "Tree")
                 {
@@ -46,7 +47,7 @@ void NuTabView::onLoadView()
                 {
 
                     std::vector<DbRecordBuffer*> childRecs;
-                    QString sqlQuery = QString("select * from Configurations where parent=%1").arg(pRecordBuffer->getKey());
+                    std::string sqlQuery = "select * from Configurations where parent=" + pRecordBuffer->getKey();
                     ConnectionSqlite::get()->ExecuteSql(sqlQuery,childRecs);
 
                     if(childRecs.size() == 1)
